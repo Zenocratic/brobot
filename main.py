@@ -34,9 +34,11 @@ def entertainment(number):
        robot.turn(-90)
        robot.turn(45)
     elif number == 2:
-        ev3.speaker.say("Never gonna give you up.")
+        ev3.speaker.say("What does a robot wear when it rains?")
+        wait(3000)
+        ev3.speaker.say("Ro boots")
     elif number == 3:
-        for i in range(1,10):
+        for i in range(5):
             ev3.light.on(Color.RED)
             wait(100)
             ev3.light.on(Color.GREEN)
@@ -77,6 +79,7 @@ while (execute_program):
     if time.time() - start_time >= 10:
         robot.stop()
         entertainment(random.randint(1,4))
+        # entertainment(3)
         start_time = time.time()
 
 ev3.speaker.play_file(SoundFile.CHEERING)
