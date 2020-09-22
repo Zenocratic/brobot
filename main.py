@@ -1,0 +1,71 @@
+#!/usr/bin/env pybricks-micropython
+from pybricks.hubs import EV3Brick
+from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor)
+from pybricks.parameters import Port, Stop, Direction, Button, Color
+from pybricks.tools import wait, StopWatch, DataLog
+from pybricks.robotics import DriveBase
+from pybricks.media.ev3dev import SoundFile, ImageFile
+import time, random
+
+
+
+# Create your objects here.
+left_motor = Motor(Port.B)
+right_motor = Motor(Port.C)
+color_sensor = ColorSensor(Port.S4) 
+us_sensor = UltrasonicSensor(Port.S3)
+
+execute_program = True
+
+RED = 20
+GREEN = 20
+BLUE = 30
+
+turn_rate = 5
+drive_speed = -200
+
+ev3 = EV3Brick()
+robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=114)
+
+start_time = time.time()
+
+def check_time():
+    if time.time() - start_time >= 10:
+        start_time = time.time()
+        return True
+    return False
+
+
+def entertainment(number):
+    if number == 1:
+        robot.turn(360)
+    elif number == 2:
+        ev3.speaker.say("Never gonna give you up.")
+    elif number == 3:
+        robot.turn(360)
+    else:
+        robot.turn(360)
+    wait(250)
+
+# TODO Increase turn radius while outside black line
+# Write your program here.
+ev3.speaker.beep()
+
+while (True):
+    red, green, blue = color_sensor.rgb()
+    is_black = red < RED or blue < BLUE or green < GREEN
+    # print("Red: {}, Green: {}, Blue: {},".format(red, green, blue))
+    # print(str(is_black))
+
+    if is_black:
+        robot.drive(drive_speed, turn_rate)
+    else:
+        robot.drive(drive_speed, -turn_rate)
+
+    if check_time:
+        robot.stop()
+        entertainment(random.randint(1,4))
+
+    if us_sensor.distance() < 200:
+        robot.stop()
+        ev3.speaker.play_file(SoundFile.CHEERING)
