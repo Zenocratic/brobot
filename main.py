@@ -23,8 +23,8 @@ RED = 10
 GREEN = 10
 BLUE = 10
 
-turn_rate = 5
-drive_speed = -200
+turn_rate = 10
+drive_speed = -100
 
 ev3 = EV3Brick()
 robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=127)
@@ -63,9 +63,11 @@ while (execute_program):
 
     if us_sensor.distance() < 200:
         robot.stop()
-        ev3.speaker.play_file(SoundFile.CHEERING)
+        break
 
     if time.time() - start_time >= 10:
         start_time = time.time()
         robot.stop()
         entertainment(random.randint(1,4))
+
+ev3.speaker.play_file(SoundFile.CHEERING)
