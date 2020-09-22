@@ -17,6 +17,8 @@ us_sensor = UltrasonicSensor(Port.S3)
 
 execute_program = True
 
+debug_mode = False
+
 RED = 20
 GREEN = 20
 BLUE = 30
@@ -51,11 +53,17 @@ def entertainment(number):
 # Write your program here.
 ev3.speaker.beep()
 
-while (True):
+if (debug_mode):
+    execute_program = False
+    red, green, blue = color_sensor.rgb()
+    print("Red: {}, Green: {}, Blue: {},".format(red, green, blue))
+    print(str(is_black))
+
+
+while (execute_program):
     red, green, blue = color_sensor.rgb()
     is_black = red < RED or blue < BLUE or green < GREEN
-    # print("Red: {}, Green: {}, Blue: {},".format(red, green, blue))
-    # print(str(is_black))
+
 
     if is_black:
         robot.drive(drive_speed, turn_rate)
