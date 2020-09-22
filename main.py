@@ -19,24 +19,15 @@ execute_program = True
 
 debug_mode = False
 
-RED = 20
-GREEN = 20
-BLUE = 30
+RED = 10
+GREEN = 10
+BLUE = 10
 
 turn_rate = 5
 drive_speed = -200
 
 ev3 = EV3Brick()
-robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=114)
-
-start_time = time.time()
-
-def check_time():
-    if time.time() - start_time >= 10:
-        start_time = time.time()
-        return True
-    return False
-
+robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=127)
 
 def entertainment(number):
     if number == 1:
@@ -52,6 +43,7 @@ def entertainment(number):
 # TODO Increase turn radius while outside black line
 # Write your program here.
 ev3.speaker.beep()
+start_time = time.time()
 
 if (debug_mode):
     execute_program = False
@@ -64,16 +56,16 @@ while (execute_program):
     red, green, blue = color_sensor.rgb()
     is_black = red < RED or blue < BLUE or green < GREEN
 
-
     if is_black:
         robot.drive(drive_speed, turn_rate)
     else:
         robot.drive(drive_speed, -turn_rate)
 
-    if check_time:
-        robot.stop()
-        entertainment(random.randint(1,4))
-
     if us_sensor.distance() < 200:
         robot.stop()
         ev3.speaker.play_file(SoundFile.CHEERING)
+
+    if time.time() - start_time >= 10:
+        start_time = time.time()
+        robot.stop()
+        entertainment(random.randint(1,4))
