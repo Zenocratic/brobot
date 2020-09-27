@@ -34,7 +34,7 @@ if (calibration_mode):
     execute_program = False
     i = 0
     while True:
-        rgb = measure_color()
+        rgb = robot.measure_color()
         left_is_black = rgb[0] < RED and rgb[1] < GREEN and rgb[2] < BLUE
         right_is_black = rgb[3] < RED and rgb[4] < GREEN and rgb[5] < BLUE
         print("\nLEFT\tR: {0[0]}\tG: {0[1]}\tB: {0[2]}\tBLACK: {1}\nRIGHT\tR: {0[3]}\tG: {0[4]}\tB: {0[5]}\tBLACK: {2}\n".format(rgb, left_is_black, right_is_black))

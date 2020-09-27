@@ -7,10 +7,8 @@ class BroBot():
         self.right_color_sensor = ColorSensor(Port.S3)
 
     def measure_color(self):
-        left = self.left_color_sensor()
-        right = self.left_color_sensor()
-        return left + right
+        return self.left_color_sensor() + self.right_color_sensor()
 
-    def is_black(self, color_sensor):
-        pass
-
+    def is_black(self, thresholds):
+        rgb = self.measure_color()
+        return rgb[0] < thresholds[0] and rgb[1] < thresholds[1] and rgb[2] < thresholds[2] and rgb[3] < thresholds[0] and rgb[4] < thresholds[1] and rgb[5] < thresholds[2]
