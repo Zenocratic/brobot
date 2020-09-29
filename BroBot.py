@@ -29,6 +29,8 @@ class BroBot():
         self.GREEN = (self.GREEN_ON_WHITE + self.GREEN_ON_BLACK) // 2
         self.BLUE = (self.BLUE_ON_WHITE + self.BLUE_ON_BLACK) // 2
 
+        self.start_time = time.time()
+
     def calibrate(self):
         self.ev3.screen.print("Calibrating...\nL-SENSOR: WHITE\nR-SENSOR: BLACK\nPUSH A BUTTON\nTO CONTINUE")
         while True:
@@ -49,51 +51,62 @@ class BroBot():
         self.GREEN = (self.GREEN_ON_WHITE + self.GREEN_ON_BLACK) // 2
         self.BLUE = (self.BLUE_ON_WHITE + self.BLUE_ON_BLACK) // 2
 
-    def drive(self):
+    def is_black(self, color_sensor):
+        (red, green, blue) = color_sensor.rgb()
+        if red < self.RED and green < self.GREEN and blue < self.BLUE:
+            return True
+        else:
+            return False
+
+    def look_for_line(self):
+        turn_rate = 80
+        drive_speed = 50
+
+        right_is_black = self.is_black(self.right_color_sensor)
+        left_is_black = self.is_black(self.left_color_sensor)
+
+        if not right_is_black and not left_is_black:
+            self.brobot.drive(drive_speed, turn_rate)
+        if left_is_black or right_is_black:
+            wait(100)
+            execute_program = True
+            no_line = False
+
+    def drive_loop(self):
         execute_program = True
         no_line = False
-        turn_rate = 5
-        drive_speed = 30
+        start_time = time.time()
 
         while True:
-            while (no_line):
-                turn_rate = 80
-                drive_speed = 50
-                right_red, right_green, right_blue = right_sensor.rgb()
-                left_red, left_green, left_blue = left_sensor.rgb()
-                right_is_black = right_red < RED or right_green < GREEN or right_blue < BLUE
-                left_is_black = left_red < RED or left_green < GREEN or left_blue < BLUE
-                if not right_is_black and not left_is_black:
-                    brobot.drive(drive_speed, turn_rate)
-                if left_is_black or right_is_black:
-                    wait(100)
-                    execute_program = True
-                    no_line = False
+            while no_line:
+                self.look_for_line()
 
-
-
-            while (execute_program):
-                turn_rate = 120
-                drive_speed = 200 
-                right_red, right_green, right_blue = right_sensor.rgb()
-                left_red, left_green, left_blue = left_sensor.rgb()
-                right_is_black = right_red < RED or right_green < GREEN or right_blue < BLUE
-                left_is_black = left_red < RED or left_green < GREEN or left_blue < BLUE
-
-            if not right_is_black and not left_is_black:
-                brobot.drive(drive_speed, 0)
-            elif right_is_black and left_is_black:
-                brobot.drive(drive_speed, 0)
-            elif left_is_black:
-                brobot.drive(50, -turn_rate)
-                start_time = time.time()
-            elif right_is_black:
-                brobot.drive(50, turn_rate)
-                start_time = time.time()
-
+            while execute_program:
+                self.run()
 
             if time.time() - start_time >= 3:
                 start_time = time.time()
                 execute_program = False
                 no_line = True
 
+
+    def run(self):
+        turn_rate = 120
+        drive_speed = 200 
+
+        right_is_black = self.is_black(self.right_color_sensor)
+        left_is_black = self.is_black(self.left_color_sensor)
+
+        if not right_is_black and not left_is_black:
+            self.brobot.drive(drive_speed, 0)
+        elif right_is_black and left_is_black:
+            self.brobot.drive(drive_speed, 0)
+        elif left_is_black:
+            self.brobot.drive(50, -turn_rate)
+            self.set_time()
+        elif right_is_black:
+            self.brobot.drive(50, turn_rate)
+            self.set_time()
+
+    def set_time(self):
+        self.start_time = time.time()
