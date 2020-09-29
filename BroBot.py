@@ -29,7 +29,9 @@ class BroBot():
         self.GREEN = (self.GREEN_ON_WHITE + self.GREEN_ON_BLACK) // 2
         self.BLUE = (self.BLUE_ON_WHITE + self.BLUE_ON_BLACK) // 2
 
-        self.start_time = time.time()
+        self.self.start_time = time.time()
+        self.execute_program = True
+        self.no_line = False
 
     def calibrate(self):
         self.ev3.screen.print("Calibrating...\nL-SENSOR: WHITE\nR-SENSOR: BLACK\nPUSH A BUTTON\nTO CONTINUE")
@@ -69,26 +71,23 @@ class BroBot():
             self.brobot.drive(drive_speed, turn_rate)
         if left_is_black or right_is_black:
             wait(100)
-            execute_program = True
-            no_line = False
+            self.execute_program = True
+            self.no_line = False
 
     def drive_loop(self):
-        execute_program = True
-        no_line = False
-        start_time = time.time()
+        self.start_time = time.time()
 
         while True:
-            while no_line:
+            while self.no_line:
                 self.look_for_line()
 
-            while execute_program:
+            while self.execute_program:
                 self.run()
 
-            if time.time() - start_time >= 3:
-                start_time = time.time()
-                execute_program = False
-                no_line = True
-
+            if time.time() - self.start_time >= 3:
+                self.start_time = time.time()
+                self.execute_program = False
+                self.no_line = True
 
     def run(self):
         turn_rate = 120
@@ -103,10 +102,7 @@ class BroBot():
             self.brobot.drive(drive_speed, 0)
         elif left_is_black:
             self.brobot.drive(50, -turn_rate)
-            self.set_time()
+            self.start_time = time.time()
         elif right_is_black:
             self.brobot.drive(50, turn_rate)
-            self.set_time()
-
-    def set_time(self):
-        self.start_time = time.time()
+            self.start_time = time.time()
